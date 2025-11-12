@@ -30,7 +30,7 @@ module IFID(
     
     always @ (negedge clk)
     begin
-        PC_out = PC_in;
-        Instr_out = Instr_in;
+        PC_out <= PC_in;
+        Instr_out <= Instr_in;
     end
 endmodule

@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 10/26/2025 04:00:06 PM
+// Create Date: 11/12/2025 05:54:23 AM
 // Design Name: 
-// Module Name: program_counter
+// Module Name: register32
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,20 +20,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module program_counter(
+module register32(
     input clk,
-    input [31:0] PC_in,
-    output reg [31:0] PC_out
+    input [31:0] D,
+    input we,
+    output [31:0] Q
     );
     
-    initial begin
-        PC_out = 0;
-    end
-    
-    always @ (negedge clk) begin
-        if (PC_in) begin
-            PC_out = PC_in;
-        end
-    end
-    
+    always @ (posedge clk)
+        if(we) Q <= D;
 endmodule

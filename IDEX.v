@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 10/26/2025 04:00:06 PM
+// Create Date: 11/12/2025 05:07:48 AM
 // Design Name: 
-// Module Name: program_counter
+// Module Name: IDEX
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,20 +20,19 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module program_counter(
+module IDEX(
     input clk,
-    input [31:0] PC_in,
-    output reg [31:0] PC_out
+    input [3:0] Rd_ID,
+    input [31:0] Rn_ID,
+    input [31:0] Rm_ID,
+    output reg [3:0] Rd_EX,
+    output reg [31:0] Rn_EX,
+    output reg [31:0] Rm_EX
     );
     
-    initial begin
-        PC_out = 0;
-    end
-    
     always @ (negedge clk) begin
-        if (PC_in) begin
-            PC_out = PC_in;
-        end
+        Rd_EX <= Rd_ID;
+        Rn_EX <= Rn_ID;
+        Rm_EX <= Rm_ID;
     end
-    
 endmodule

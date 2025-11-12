@@ -21,23 +21,26 @@
 
 
 module Instr_decode(
-    input clk, half,
+    input half,
     input [31:0] Instr,
     output reg [31:0] Instr_out,
+    output reg [1:0] instr_step,
     output reg [31:0] Imm,
-    output reg [3:0] Rd, Rm, Rn
+    output reg [3:0] Rd, Rn, Rm,
+    output reg ALU_src, memread, memwrite, regwrite, wd_src
     );
     
     wire [15:0] Instr16b;
     
     assign Instr16b = half ? Instr[31:16] : Instr[15:0];
     
-    always @ (posedge clk) begin
+    always @ (*) begin
         Instr_out = Instr16b;
+        instr_step = 2'b01;
         casex(Instr[15:10])
-            6'b11101x: begin Instr_out = Instr; end //32 bit instr
-            6'b11110x: begin Instr_out = Instr; end //32 bit instr
-            6'b11111x: begin Instr_out = Instr; end //32 bit instr
+            6'b11101x: begin Instr_out = Instr; instr_step = 2'b10; end //32 bit instr
+            6'b11110x: begin Instr_out = Instr; instr_step = 2'b10; end //32 bit instr
+            6'b11111x: begin Instr_out = Instr; instr_step = 2'b10; end //32 bit instr
             6'b00xxxx: begin //Shift add sub etc 
                 casex(Instr16b[13:11])
                     3'b000: begin
