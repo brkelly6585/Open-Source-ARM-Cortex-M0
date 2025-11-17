@@ -24,7 +24,7 @@ module register32(
     input clk,
     input [31:0] D,
     input we,
-    output [31:0] Q
+    output reg [31:0] Q
     );
     
     always @ (posedge clk)
