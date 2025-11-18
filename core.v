@@ -32,7 +32,7 @@ module core(
     wire [31:0] PC_in, PC_IF, PC_ID, Instr_IF, Instr_ID, PC_Branch;
     wire [31:0] Instruction;
     wire [3:0] Rd_ID, Rm, Rn, Rd_EX, ALU_op_ID, ALU_op_EX;
-    wire [31:0] Rn_ID, Rm_ID, Rn_EX, Rm_EX, Imm_ID, Imm_EX, ALU_in;
+    wire [31:0] Rn_ID, Rm_ID, Rn_EX, Rm_EX, Imm_ID, Imm_EX, ALU_in_n, ALU_in_m, ASPR;
     
     wire[31:0] ALUdata;
     
@@ -67,18 +67,21 @@ module core(
     
     assign mem_wait = 1'b0; //memwrite_EX | memread_EX;
     
-    assign branch_EX = branchX_EX || branchCond_EX;
+    //PC acts as a reset for Branch, disables it for first 2 cycles letting PC increment and cannot branch within first 2 cycles anyway
+    assign branch_EX = (branchX_EX | branchCond_EX) && PC_IF[31:1];
     
-    assign ALU_in = ALU_src_EX ? Imm_EX : Rm_EX;
+    assign ALU_in_m = ALU_src_EX ? Imm_EX : Rm_EX;
     
-    arthALU ALU(clk, ALU_op_EX, Rn_EX, ALU_in, ALU_in[4:0], flags_EX, ALUdata, N, Z, C, V, APSR);
+    assign ALU_in_n = move_EX ? 0 : Rn_EX;
+    
+    arthALU ALU(clk, ALU_op_EX, ALU_in_n, ALU_in_m, ALU_in_m[4:0], flags_EX, ALUdata, N, Z, C, V, APSR);
     
     //Data_Memory DataMem(clk, memread, memwrite, ALUdata, data_in, MEMdata);
     
     
     
     initial begin
-    #100
+    #400
     $finish;
     end
     

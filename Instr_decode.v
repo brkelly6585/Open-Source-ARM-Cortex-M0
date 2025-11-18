@@ -64,11 +64,10 @@ module Instr_decode(
         move = 1'b0;
         branchCond = 1'b0;
         branchX = 1'b0;
-        branchCond = 1'b0;
         ALU_op = 4'd0;
-        flags = 1'b1;
+        flags = 1'b0;
         
-        casex(Instr[15:10])
+        casex(Instr16b[15:10])
             6'b11101x: begin Instr_out = Instr; end //32 bit instr
             6'b11110x: begin Instr_out = Instr; end //32 bit instr
             6'b11111x: begin Instr_out = Instr; end //32 bit instr
@@ -84,6 +83,7 @@ module Instr_decode(
                         regwrite = 1'b1;
                         wd_src = 1'b0;
                         move = 1'b0;
+                        flags = 1'b1;
                         
                         ALU_op = LSL;
                         
@@ -98,6 +98,7 @@ module Instr_decode(
                         regwrite = 1'b1;
                         wd_src = 1'b0;
                         move = 1'b0;
+                        flags = 1'b1;
                         
                         ALU_op = LSR;
                     end
@@ -111,6 +112,8 @@ module Instr_decode(
                         regwrite = 1'b1;
                         wd_src = 1'b0;
                         move = 1'b0;
+                        flags = 1'b1;
+                        
                         ALU_op = ASR;
                     end
                     3'b011: begin
@@ -123,6 +126,7 @@ module Instr_decode(
                         regwrite = 1'b1;
                         wd_src = 1'b0;
                         move = 1'b0;
+                        flags = 1'b1;
                         
                         ALU_src = Instr16b[10];
                         ALU_op = Instr16b[9] ? SUB : ADD;
@@ -149,7 +153,7 @@ module Instr_decode(
                         */
                         
                     end
-                    /// IC ///
+                    
                     3'b1xx: begin
                         Rd = Instr16b[10:8];
                         Rn = Instr16b[10:8];
@@ -160,12 +164,13 @@ module Instr_decode(
                         regwrite = 1'b1;
                         wd_src = 1'b0;
                         move = 1'b0;
+                        flags = 1'b1;
                         
                         case(Instr[12:11])
-                            2'b00: begin move = 1'b1;  end //MOV
-                            2'b01: begin  ALU_src = SUB; regwrite = 1'b0; end
-                            2'b10: begin ALU_src = ADD; end
-                            2'b11: begin ALU_src = SUB; end
+                            2'b00: begin move = 1'b1; ALU_op = ADD;  end //MOV
+                            2'b01: begin  ALU_op = SUB; regwrite = 1'b0; end
+                            2'b10: begin ALU_op = ADD; end
+                            2'b11: begin ALU_op = SUB; end
                         endcase
                         
                     end
@@ -182,6 +187,7 @@ module Instr_decode(
                 regwrite = 1'b1;
                 wd_src = 1'b0;
                 move = 1'b0;
+                flags = 1'b1;
                 
                 case(Instr16b[9:6])
                     4'h0: begin //AND
@@ -249,6 +255,7 @@ module Instr_decode(
                 regwrite = 1'b1;
                 wd_src = 1'b0;
                 move = 1'b0;
+                flags = 1'b1;
                 
                 casex(Instr16b[9:6])
                     4'b00xx: begin // ADD REG
@@ -257,24 +264,31 @@ module Instr_decode(
                     4'b0100: begin // UNPREDICTABLE
                     
                     end
-                    4'b0101: begin // CMP REG (T2)
+                    4'b0101: begin // CMP REG (T2) R0-R7
                         regwrite = 1'b0;
                         ALU_op = SUB;
                     end
-                    4'b011x: begin // CMP REG (T2)
+                    4'b011x: begin // CMP REG (T2) not R0-R7 basically don't allow PC
                         regwrite = 1'b0;
                         ALU_op = SUB;
                     end
                     4'b10xx: begin // MOV REG
-                        ALU_op = LSL;
+                        ALU_op = ADD;
+                        ALU_src = 1'b1;
                         Imm = 32'd0;
                     end
                     4'b110x: begin // BX
                         regwrite = 1'b0;
+                        flags = 1'b0;
                         branchX = 1'b1;
                     end
-                    4'b111x: begin // BLX
-                        regwrite = 1'b0;
+                    4'b111x: begin // BLX  //// SET Rd = LR; Rn = PC; Imm = 1 instr (Need to impl PC pass)
+                        ALU_op = ADD;
+                        Rn = 4'hF;
+                        Rd = 4'hD;
+                        Imm = 1;
+                        regwrite = 1'b1;
+                        flags = 1'b0;
                         branchX = 1'b1;
                     end
                 endcase
@@ -283,18 +297,21 @@ module Instr_decode(
             end
             6'b01001x: begin //LDR(literal)
                 Rd = Instr16b[10:8];
+                Rn = 4'hF; //PC
                 Imm = Instr16b[7:0];
                 ALU_src = 1'b1;
                 memread = 1'b1;
                 memwrite = 1'b0;
                 regwrite = 1'b1;
                 wd_src = 1'b1;
+                ALU_op = ADD;
             end
             6'b0101xx: begin
                 Rd = Instr16b[2:0];
                 Rn = Instr16b[5:3];
                 Rm = Instr16b[8:6];
                 ALU_src = 1'b0;
+                ALU_op = ADD;
                 wd_src = 1'b1;
                 move = 1'b0;
                 case(Instr16b[11:9])
@@ -345,6 +362,7 @@ module Instr_decode(
                 Rn = Instr16b[5:3];
                 Imm = Instr16b[10:6];
                 ALU_src = 1'b1;
+                ALU_op = ADD;
                 wd_src = 1'b1;
                 move = 1'b0;
                 if (Instr16b[11]) begin // LDR (IMM)
@@ -362,6 +380,10 @@ module Instr_decode(
                 Rd = Instr16b[2:0];
                 Rn = Instr16b[5:3];
                 Imm = Instr16b[10:6];
+                ALU_src = 1'b1;
+                ALU_op = ADD;
+                wd_src = 1'b1;
+                move = 1'b0;
                 if (Instr16b[11]) begin // LDRB (IMM)
                     memread = 1'b1;
                     memwrite = 1'b0;
@@ -378,6 +400,7 @@ module Instr_decode(
                 Rn = Instr16b[5:3];
                 Imm = Instr16b[10:6];
                 ALU_src = 1'b1;
+                ALU_op = ADD;
                 wd_src = 1'b1;
                 move = 1'b0;
                 if (Instr16b[11]) begin // LDRH (IMM)
@@ -394,6 +417,7 @@ module Instr_decode(
                 Rd = Instr16b[10:8];
                 Imm = Instr16b[7:0];
                 ALU_src = 1'b1;
+                ALU_op = ADD;
                 wd_src = 1'b1;
                 move = 1'b0;
                 if (Instr16b[11]) begin // LDR (IMM)
@@ -410,10 +434,17 @@ module Instr_decode(
                 Rd = Instr16b[10:8];
                 Imm = Instr16b[7:0];
                 move = 1'b0;
-                /*
-                if (Instr16b[11]); //ADD (SP +)
-                else ; //ADR
-                */
+                ALU_src = 1'b1;
+                wd_src = 1'b0;
+                regwrite = 1'b1;
+                memread = 1'b0;
+                memwrite = 1'b0;
+                ALU_op = ADD;
+                flags = 1'b0;
+                
+                if (Instr16b[11]) Rn = 4'hD; //ADD (SP +)
+                else Rn = 4'hF; //ADR
+                
             end
             6'b1011xx: begin //Misc
             

@@ -38,9 +38,12 @@ module Instruction_Mem(
     
     initial begin
         //Instructions go here
-        Instructions[0] = 16'h19C2; // ADD R0, R2, R7
-        Instructions[1] = 16'h1CCC; // ADD R1, R4, 3
-        Instructions[2] = 16'b0100000000_001_000; // ANDS | ANDS R0, R1
+        Instructions[0] = 16'b00100_000_00000000; // MOV (Immediate) | MOVS R0, #0
+        Instructions[1] = 16'b00100_001_00000001; // MOV (Immediate) | MOVS R1, #1
+        Instructions[2] = 16'b010001000_0000_001; // ADD (Reg) | ADD R0, R1
+        Instructions[3] = 16'b0100000000_001_000; // ANDS | ANDS R0, R1
+        Instructions[4] = 16'b0100001111_001_110; // MVNS | MVNS R6, R1
+        Instructions[5] = 16'b00010_00001_110_111; // ASRS (imm) | ASRS R7, R6, #1
         
     end
     

@@ -17,7 +17,7 @@ module arthALU (
     
     reg N_next, Z_next, C_next, V_next;
     
-    always @(*) begin
+    always @(posedge clk) begin
         ALUResult = 32'h0000; 
         N_next = 0;
         Z_next = 0;
@@ -39,10 +39,10 @@ module arthALU (
             
             /* for all shifts, implement some change that allows for shifting without constant later IE LSL r4, r3 (r4 = r4 << r3) */
             4'h2: begin // LSL
-                if (shamt == 0) ALUResult = d1; 
+                if (shamt == 0) ALUResult = d0; 
                 else begin 
-                    ALUResult = d1 << shamt; 
-                    C_next = d1[32 - shamt];
+                    ALUResult = d0 << shamt; 
+                    C_next = d0[32 - shamt];
                 end
                 N_next = ALUResult[31]; 
                 Z_next = (ALUResult==32'b0);
@@ -50,20 +50,20 @@ module arthALU (
             
             
             4'h3: begin // LSR
-                if (shamt == 0) ALUResult = d1; 
+                if (shamt == 0) ALUResult = d0; 
                 else begin 
-                    ALUResult = d1 >> shamt; 
-                    C_next = d1[shamt - 1];
+                    ALUResult = d0 >> shamt; 
+                    C_next = d0[shamt - 1];
                 end
                 N_next = ALUResult[31]; 
                 Z_next = (ALUResult==32'b0);
             end
             
             4'h4: begin // ASR
-                if (shamt == 0) ALUResult = d1; 
+                if (shamt == 0) ALUResult = d0; 
                 else begin
-                    ALUResult = $signed(d1) >>> shamt; 
-                    C_next = d1[shamt - 1];
+                    ALUResult = $signed(d0) >>> shamt; 
+                    C_next = d0[shamt - 1];
                 end
                 N_next = ALUResult[31]; 
                 Z_next = (ALUResult==32'b0);

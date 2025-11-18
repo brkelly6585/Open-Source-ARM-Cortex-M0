@@ -37,20 +37,20 @@ module Register_File(
     
     initial begin
         for (i=0; i<16; i=i+1)
-            Registers[i] = i;
+            Registers[i] = 0;
     end
     
     
     always@(negedge clk) begin
         if(we_WB>0)
         begin
-            Registers[Rd_WB] = wd_WB;
+            Registers[Rd_WB] <= wd_WB;
         end
     end
     
     always@(posedge clk) begin
-        Rn_Out = Registers[Rn];
-        Rm_Out = Registers[Rm];
+        Rn_Out <= (wd_WB && Rn == Rd_WB) ? wd_WB : Registers[Rn];
+        Rm_Out <= (wd_WB && Rm == Rd_WB) ? wd_WB : Registers[Rm];
     
     end
     
