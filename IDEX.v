@@ -27,15 +27,15 @@ module IDEX(
     input [31:0] Rn_ID,
     input [31:0] Rm_ID,
     input [31:0] Imm_ID,
-    input [3:0] ALU_op_ID, cond_ID,
+    input [3:0] ALU_op_ID,
     input ALU_src_ID, memread_ID, memwrite_ID, regwrite_ID, wd_src_ID, branchCond_ID, branchX_ID, move_ID, flags_ID,
     
     output reg [3:0] Rd_EX,
     output reg [31:0] Rn_EX,
     output reg [31:0] Rm_EX,
     output reg [31:0] Imm_EX,
-    output reg [3:0] ALU_op_EX, cond_EX,
-    output reg ALU_src_EX, memread_EX, memwrite_EX, regwrite_EX, wd_src_EX, branchCond_EX, branchX_EX, move_EX, flags_EX,
+    output reg [3:0] ALU_op_EX,
+    output reg ALU_src_EX, memread_EX, memwrite_EX, regwrite_EX, wd_src_EX, branchCond_EX, branchX_EX, move_EX, flags_EX
     );
     
     always @ (negedge clk) begin
@@ -54,7 +54,7 @@ module IDEX(
             branchX_EX <= branchX_ID;
             move_EX <= move_ID;
             flags_EX <= flags_ID;
-            cond_EX <= cond_ID;
+            //cond_EX <= cond_ID;
         end
     end
 endmodule

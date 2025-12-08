@@ -36,7 +36,7 @@ module Data_Memory(
     
     //Use for prefilled data
     initial begin
-    
+        data[1] = 3;
     end
     
     always @ (negedge clk) begin

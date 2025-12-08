@@ -3,7 +3,6 @@ module arthALU (
     input  wire [3:0] operation,// 0..F per decoder
     input  wire [31:0] d0, //data from rdn 
     input  wire [31:0] d1, //data from rm
-    input  wire [4:0] shamt, // shamt for shift functions
     input  wire update_flags, // for adds and subs type ops
     output reg [31:0] ALUResult,
     output reg N,

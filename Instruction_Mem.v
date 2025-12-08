@@ -32,7 +32,7 @@ module Instruction_Mem(
     
     initial begin
         for (i = 0; i< 256; i=i+1) begin
-            Instructions[i] = 15'b0;
+            Instructions[i] = 16'hFFFF;
         end
     end
     
