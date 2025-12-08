@@ -22,6 +22,7 @@
 
 module IFID(
     input clk,
+    input IFID_EN,
     input [31:0] PC_in,
     input [31:0] Instr_in,
     output reg [31:0] PC_out,
@@ -30,7 +31,14 @@ module IFID(
     
     always @ (negedge clk)
     begin
-        PC_out <= PC_in;
-        Instr_out <= Instr_in;
+        if (IFID_EN) begin
+            PC_out <= PC_in;
+            Instr_out <= Instr_in;
+        end
+        else begin
+            Instr_out <= Instr_out;
+            PC_out <= PC_out;
+        end
+        
     end
 endmodule
