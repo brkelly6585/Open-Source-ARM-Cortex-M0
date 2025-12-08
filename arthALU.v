@@ -140,7 +140,7 @@ module arthALU (
             end
               
             4'hF: begin // MVN
-                ALUResult = -d1;
+                ALUResult = ~d1;
                 N_next = ALUResult[31]; 
                 Z_next = (ALUResult==32'b0);
             end
