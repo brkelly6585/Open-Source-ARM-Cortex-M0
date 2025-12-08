@@ -36,7 +36,7 @@ module Register_File(
     integer i;
     
     initial begin
-        for (i=0; i<16; i=i+1)
+        for (i=0; i<13; i=i+1)
             Registers[i] = 0;
     end
     
@@ -47,10 +47,10 @@ module Register_File(
             Registers[Rd_WB] <= wd_WB;
         end
     end
-    
-    always@(posedge clk) begin
-        Rn_Out <= (wd_WB && Rn == Rd_WB) ? wd_WB : Registers[Rn];
-        Rm_Out <= (wd_WB && Rm == Rd_WB) ? wd_WB : Registers[Rm];
+   
+    always@(*) begin
+        Rn_Out <= (we_WB && Rn == Rd_WB) ? wd_WB : Registers[Rn];
+        Rm_Out <= (we_WB && Rm == Rd_WB) ? wd_WB : Registers[Rm];
     
     end
     
@@ -79,9 +79,9 @@ module Register_File(
     register32 LR (clk, wd_WB, write_sel[14], reg_Q[14]);
     register32 PC (clk, wd_WB, write_sel[15], reg_Q[15]);
     
-    always @ (posedge clk) begin
-        Rn_ID <= reg_Q[Rn];
-        Rm_ID <= reg_Q[Rm];
+    always @ (*) begin
+        Rn_Out <= (we_WB && Rn == Rd_WB) ? wd_WB : Registers[Rn];
+        Rm_Out <= (we_WB && Rm == Rd_WB) ? wd_WB : Registers[Rm];
     end
     */
     

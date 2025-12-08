@@ -119,8 +119,8 @@ module Instr_decode(
                     3'b011: begin
                         Rm = Instr16b[8:6];
                         Imm = Instr16b[8:6];
-                        Rd = Instr16b[5:3];
-                        Rn = Instr16b[2:0];
+                        Rd = Instr16b[2:0];
+                        Rn = Instr16b[5:3];
                         memread = 1'b0;
                         memwrite = 1'b0;
                         regwrite = 1'b1;
@@ -219,7 +219,6 @@ module Instr_decode(
                         ALU_op = TST;
                     end
                     4'h9: begin //RSB
-                        ALU_src = 1'b1;
                         ALU_op = RSBS;
                     end
                     4'ha: begin //CMP

@@ -13,7 +13,8 @@ module arthALU (
     output wire [31:0] APSROut
 );
 
-    
+    wire [4:0] shamt;
+    assign shamt = d1[4:0];
     
     reg N_next, Z_next, C_next, V_next;
     
@@ -101,7 +102,7 @@ module arthALU (
             end
               
             4'h9: begin // RSBS  normally rd = d1-d0 but thumb only negates d0 I guess
-                {C_next, ALUResult} = 33'b0 - {1'b0, d0}; //1 no borrow, 0 borrow
+                {C_next, ALUResult} = 33'b0 - {1'b0, d1}; //1 no borrow, 0 borrow
                 N_next = ALUResult[31];
                 Z_next = (ALUResult==32'b0);
                 V_next = d0[31] & ALUResult[31];
@@ -134,13 +135,13 @@ module arthALU (
             end
               
             4'hE: begin // BIC
-                ALUResult = d0 & ~d1;
+                ALUResult = d0 & (~d1);
                 N_next = ALUResult[31]; 
                 Z_next = (ALUResult==32'b0);
             end
               
             4'hF: begin // MVN
-                ALUResult = ~d1;
+                ALUResult = -d1;
                 N_next = ALUResult[31]; 
                 Z_next = (ALUResult==32'b0);
             end
