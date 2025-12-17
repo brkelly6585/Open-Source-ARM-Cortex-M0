@@ -38,6 +38,7 @@ module Instruction_Mem(
     
     initial begin
         //Instructions go here
+        /* Basic Test
         Instructions[0] = 16'b00100_000_00000000; // MOV (Immediate) | MOVS R0, #0
         Instructions[1] = 16'b00100_001_00000001; // MOV (Immediate) | MOVS R1, #1
         Instructions[2] = 16'b01000100_0_0001_000; // ADD (Reg) | ADD R0, R1
@@ -55,6 +56,13 @@ module Instruction_Mem(
         Instructions[12] = 16'b0100001101_100_101; // MULS | MULS R5, R4
         Instructions[13] = 16'b0001101_001_101_011; // SUBS (reg) | SUBS R3, R5, R1
         Instructions[14] = 16'b0100001001_011_100; // RSBS | RSBS R4, R3, #0
+        */
+        
+        /* Flag Test */
+        Instructions[0] = 16'b00100_000_00000000; // MOV (Immediate) | MOVS R0, #0
+        Instructions[1] = 16'b0100001111_000_001; // MVNS | MVNS R1, R0
+        Instructions[2] = 16'b00001_00001_001_010; // LSRS (imm) | LSRS R2, R1, #1
+        Instructions[3] = 16'b00110_010_00000001; // ADD (Imm) | ADDS R2, #1
         
     end
     

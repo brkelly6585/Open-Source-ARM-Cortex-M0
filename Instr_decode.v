@@ -166,7 +166,7 @@ module Instr_decode(
                         move = 1'b0;
                         flags = 1'b1;
                         
-                        case(Instr[12:11])
+                        case(Instr16b[12:11])
                             2'b00: begin move = 1'b1; ALU_op = ADD;  end //MOV
                             2'b01: begin  ALU_op = SUB; regwrite = 1'b0; end
                             2'b10: begin ALU_op = ADD; end
@@ -458,7 +458,7 @@ module Instr_decode(
                 move = 1'b0;
                 if (Instr[11:8] != 3'b111) begin //B
                     Imm = $signed(Instr16b[7:0]);
-                    Rn = Instr16b[11:8];
+                    Rd = Instr16b[11:8];
                     branchCond = 1'b1;
                 end else begin //UDF and SVC
                     Imm = Instr16b[7:0];
@@ -467,6 +467,7 @@ module Instr_decode(
             end
             6'b11100x: begin //Uncond branch
                 Imm = Instr16b[10:0];
+                Rd = 4'he;
             end
             default: Instr_out = Instr16b;
         endcase

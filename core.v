@@ -31,7 +31,7 @@ module core(
     
     wire [31:0] PC_in, PC_IF, PC_ID, Instr_IF, Instr_ID, PC_Branch;
     wire [31:0] Instruction;
-    wire [3:0] Rd_ID, Rm, Rn, Rd_EX, ALU_op_ID, ALU_op_EX;
+    wire [3:0] Rd_ID, Rm, Rn, Rd_EX, ALU_op_ID, ALU_op_EX, cond_EX;
     wire [31:0] Rn_ID, Rm_ID, Rn_EX, Rm_EX, Imm_ID, Imm_EX, ALU_in_n, ALU_in_m, ASPR;
     wire [31:0] wd_WB;
     
@@ -54,7 +54,7 @@ module core(
     
     Instruction_Mem Instruction_Memory(clk, PC_IF, Instr_IF);
     
-    IFID IFIDbuffer(clk, IFID_EN, PC_IF, Instr_IF, PC_ID, Instr_ID);
+    IFID IFIDbuffer(clk, IFID_EN, branch_EX, PC_IF, Instr_IF, PC_ID, Instr_ID);
     
     Instr_decode decoder(PC_ID[0], Instr_ID, Instruction, Imm_ID, Rd_ID, Rn, Rm, 
                          ALU_op_ID, ALU_src_ID, flags_ID, memread_ID, memwrite_ID, regwrite_ID, wd_src_ID, branchCond_ID, branchX_ID, move_ID);
@@ -62,17 +62,14 @@ module core(
     Register_File reg_file(clk, regwrite_EX, wd_WB, Rd_EX, Rn, Rm, Rn_ID, Rm_ID);
     
     //Not implemented
-    Hazard_Det hazard_det_unit(PC_IF, memread_ID, memwrite_ID, PC_EN, IFID_EN, IDEX_EN);
+    Hazard_Det hazard_det_unit(clk, PC_IF, memread_ID, memwrite_ID, PC_EN, IFID_EN, IDEX_EN);
     
-    IDEX IDEXbuffer(clk, IDEX_EN, Rd_ID, Rn_ID, Rm_ID, Imm_ID,
-                    ALU_op_ID, ALU_src_ID, memread_ID, memwrite_ID, regwrite_ID, wd_src_ID, branchCond_ID, branchX_ID, move_ID, flags_ID,
+    IDEX IDEXbuffer(clk, IDEX_EN, branch_EX, Rd_ID, Rn_ID, Rm_ID, Imm_ID,
+                    ALU_op_ID, Rd, ALU_src_ID, memread_ID, memwrite_ID, regwrite_ID, wd_src_ID, branchCond_ID, branchX_ID, move_ID, flags_ID,
                     Rd_EX, Rn_EX, Rm_EX, Imm_EX,
-                    ALU_op_EX, ALU_src_EX, memread_EX, memwrite_EX, regwrite_EX, wd_src_EX, branchCond_EX, branchX_EX, move_EX, flags_EX);
+                    ALU_op_EX, cond_EX, ALU_src_EX, memread_EX, memwrite_EX, regwrite_EX, wd_src_EX, branchCond_EX, branchX_EX, move_EX, flags_EX);
     
     
-    
-    //PC acts as a reset for Branch, disables it for first 2 cycles letting PC increment and cannot branch within first 2 cycles anyway
-    assign branch_EX = (branchX_EX | branchCond_EX) && PC_IF[31:1];
     
     assign ALU_in_m = ALU_src_EX ? Imm_EX : Rm_EX;
     
@@ -80,7 +77,7 @@ module core(
     
     arthALU ALU(clk, ALU_op_EX, ALU_in_n, ALU_in_m, flags_EX, ALUdata, N, Z, C, V, APSR);
     
-    //Branch_Unit(cond_EX, Imm_EX, N,Z,C,V, PC_Branch);
+    Branch_Unit Branch(cond_EX, PC_IF, Imm_EX, N,Z,C,V, branch_EX, PC_Branch);
     
     //Implemented but not fully tested
     Data_Memory DataMem(clk, memread_EX, memwrite_EX, ALUdata, data_in, MEMdata);

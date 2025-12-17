@@ -22,18 +22,24 @@
 
 module IFID(
     input clk,
-    input IFID_EN,
+    input IFID_EN, IFID_wipe,
     input [31:0] PC_in,
     input [31:0] Instr_in,
     output reg [31:0] PC_out,
     output reg [31:0] Instr_out
     );
     
+    reg [15:0] NOP = 16'b1011111100000000;
+    
     always @ (negedge clk)
     begin
-        if (IFID_EN) begin
+        if (IFID_EN && ~IFID_wipe) begin
             PC_out <= PC_in;
             Instr_out <= Instr_in;
+        end
+        else if (IFID_wipe) begin
+            PC_out <= 0;
+            Instr_out = {NOP, NOP};
         end
         else begin
             Instr_out <= Instr_out;

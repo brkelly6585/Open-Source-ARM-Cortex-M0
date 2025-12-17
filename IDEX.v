@@ -22,24 +22,24 @@
 
 module IDEX(
     input clk,
-    input IDEX_EN,
+    input IDEX_EN, IDEX_wipe,
     input [3:0] Rd_ID,
     input [31:0] Rn_ID,
     input [31:0] Rm_ID,
     input [31:0] Imm_ID,
-    input [3:0] ALU_op_ID,
+    input [3:0] ALU_op_ID, cond_ID,
     input ALU_src_ID, memread_ID, memwrite_ID, regwrite_ID, wd_src_ID, branchCond_ID, branchX_ID, move_ID, flags_ID,
     
     output reg [3:0] Rd_EX,
     output reg [31:0] Rn_EX,
     output reg [31:0] Rm_EX,
     output reg [31:0] Imm_EX,
-    output reg [3:0] ALU_op_EX,
+    output reg [3:0] ALU_op_EX, cond_EX,
     output reg ALU_src_EX, memread_EX, memwrite_EX, regwrite_EX, wd_src_EX, branchCond_EX, branchX_EX, move_EX, flags_EX
     );
     
     always @ (negedge clk) begin
-        if(IDEX_EN) begin
+        if(IDEX_EN && ~IDEX_wipe) begin
             Rd_EX <= Rd_ID;
             Rn_EX <= Rn_ID;
             Rm_EX <= Rm_ID;
@@ -54,7 +54,19 @@ module IDEX(
             branchX_EX <= branchX_ID;
             move_EX <= move_ID;
             flags_EX <= flags_ID;
-            //cond_EX <= cond_ID;
+            cond_EX <= cond_ID;
+        end
+        else if (IDEX_wipe) begin
+            ALU_src_EX <= 0;
+            memread_EX <= 0;
+            memwrite_EX <= 0;
+            regwrite_EX <= 0;
+            wd_src_EX <= 0;
+            branchCond_EX <= 0;
+            branchX_EX <= 0;
+            move_EX <= 0;
+            flags_EX <= 0;
+            cond_EX <= 0;
         end
     end
 endmodule
