@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 10/26/2025 04:00:06 PM
+// Create Date: 03/23/2026 07:30:21 PM
 // Design Name: 
-// Module Name: program_counter
+// Module Name: Extender
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,19 +20,19 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module program_counter(
-    input clk, reset,
-    input [31:0] PC_in,
-    output reg [31:0] PC_out
+module Extender(
+    input clk,
+    input extend,
+    input sign,
+    input size,
+    input [15:0] data_i,
+    output reg [31:0] data_o
     );
     
+    wire extend = sign ? (size ? data_i[15] : data_i[7]) : 1'b0;
     
-    
-    always @ (negedge clk) begin
-        if (!reset) PC_out <= 0;
-        else if (PC_in) begin
-            PC_out <= PC_in;
-        end
-    end
+    always @ (posedge clk)
+        data_o = size ? {{16{extend}}, data_i} : {{24{extend}}, data_i};
+        
     
 endmodule

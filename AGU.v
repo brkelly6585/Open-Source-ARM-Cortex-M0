@@ -3,9 +3,9 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 10/26/2025 04:00:06 PM
+// Create Date: 02/09/2026 01:10:41 PM
 // Design Name: 
-// Module Name: program_counter
+// Module Name: AGU
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -20,19 +20,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module program_counter(
-    input clk, reset,
-    input [31:0] PC_in,
-    output reg [31:0] PC_out
+module AGU(
+    input src,
+    input type,
+    input [31:0] Rn,
+    input [31:0] Rm,
+    input [31:0] Imm,
+    output [31:0] Addr
     );
     
-    
-    
-    always @ (negedge clk) begin
-        if (!reset) PC_out <= 0;
-        else if (PC_in) begin
-            PC_out <= PC_in;
-        end
-    end
+    assign Addr = type ? Rn : src ? Rn + Imm : Rn + Rm;
     
 endmodule

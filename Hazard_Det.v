@@ -21,35 +21,14 @@
 
 
 module Hazard_Det(
-    input clk,
-    input [31:0] PC,
-    input memread,
-    input memwrite,
-    output reg PC_EN,
-    output reg IFID_EN,
-    output reg IDEX_EN
+    input memread_EX,
+    input [3:0] Rd_EX,
+    input [3:0] Rn_ID,
+    input [3:0] Rm_ID,
+    output haz_stall
     );
     
     
-    always @ (PC, memread, memwrite, clk) begin
-        if (~PC) begin
-            PC_EN = 1;
-            IFID_EN = 1;
-            IDEX_EN = 1;
-
-        end
-        /*if ((memread | memwrite)) begin
-            PC_EN <= ~PC_EN;
-            IFID_EN <= ~IFID_EN;
-            
-        end*/
-        else begin
-            PC_EN = 1;
-            IFID_EN = 1;
-            IDEX_EN = 1;
-        end
-                
-    end
-    
+    assign haz_stall = memread_EX && (Rd_EX != 4'b0000) && ((Rd_EX == Rn_ID) || (Rd_EX == Rm_ID));
     
 endmodule

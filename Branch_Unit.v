@@ -21,9 +21,11 @@
 
 
 module Branch_Unit(
+    input branch,
     input [3:0] cond,
     input [31:0] PC,
     input [31:0] imm,
+    input [31:0] Rm,
     input N,
     input Z,
     input C,
@@ -32,11 +34,11 @@ module Branch_Unit(
     output [31:0] PC_Branch
     );
     
-    assign PC_Branch = PC+imm;
+    assign PC_Branch = &cond ? Rm : (PC+imm);
     
     always @ (*) begin
         if (!PC[31:1]) branch_EX = 0;
-        
+        if (branch) begin
         case(cond)
             4'h0:   if(Z==1) branch_EX = 1;
             4'h1:   if(Z==0) branch_EX = 1;
@@ -53,8 +55,10 @@ module Branch_Unit(
             4'hc:   if(Z==0 && N==V) branch_EX = 1;
             4'hd:   if(Z==1 && N!=V) branch_EX = 1;
             4'he:   branch_EX = 1;
+            4'hf:   branch_EX = 1;
             default: branch_EX = 0;
          endcase
+         end else branch_EX = 0;
     end
     
 
