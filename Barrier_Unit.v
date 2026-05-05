@@ -50,9 +50,9 @@ module Barrier_Unit(
     end
     
     wire complete = 
-                    (type == 2'b01) ? ~write_buf & ready_i :
-                    (type == 2'b10) ? write_ready & ~write_buf & ready_i :
-                    (type == 2'b11) ? 1'b1 : 1'b0;
+                    (type_q == 2'b01) ? ~write_buf & ready_i :
+                    (type_q == 2'b10) ? write_ready & ~write_buf & ready_i :
+                    (type_q == 2'b11) ? 1'b1 : 1'b0;
                     
     always @(*) begin
         next_state = curr_state;
