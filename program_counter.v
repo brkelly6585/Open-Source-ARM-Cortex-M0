@@ -26,11 +26,9 @@ module program_counter(
     output reg [31:0] PC_out
     );
     
-    
-    
     always @ (negedge clk) begin
         if (!reset) PC_out <= 0;
-        else if (PC_in) begin
+        else begin
             PC_out <= PC_in;
         end
     end

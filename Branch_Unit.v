@@ -31,14 +31,20 @@ module Branch_Unit(
     input C,
     input V,
     output reg branch_EX,
-    output [31:0] PC_Branch
+    output [31:0] PC_Branch,
+    output exc_out
     );
     
-    assign PC_Branch = &cond ? Rm : (PC+imm);
+    assign PC_Branch = &cond ? Rm : (PC+imm) + 4;
+    
+    //If we are ever at FFFFFFFx then its an excep call
+    assign exc_out = &cond ? (Rm[31:4] == 28'hFFFFFFF) : 1'b0;
     
     always @ (*) begin
+        branch_EX = 0;
         if (!PC[31:1]) branch_EX = 0;
-        if (branch) begin
+        if(exc_out) branch_EX = 0;
+        else if (branch) begin
         case(cond)
             4'h0:   if(Z==1) branch_EX = 1;
             4'h1:   if(Z==0) branch_EX = 1;

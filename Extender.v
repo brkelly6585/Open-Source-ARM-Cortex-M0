@@ -22,7 +22,6 @@
 
 module Extender(
     input clk,
-    input extend,
     input sign,
     input size,
     input [15:0] data_i,
@@ -32,7 +31,7 @@ module Extender(
     wire extend = sign ? (size ? data_i[15] : data_i[7]) : 1'b0;
     
     always @ (posedge clk)
-        data_o = size ? {{16{extend}}, data_i} : {{24{extend}}, data_i};
+        data_o = size ? {{16{extend}}, data_i} : {{24{extend}}, data_i[7:0]};
         
     
 endmodule
