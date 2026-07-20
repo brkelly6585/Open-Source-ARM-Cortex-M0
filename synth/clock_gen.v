@@ -16,12 +16,15 @@
 //                / DIVCLK_DIVIDE
 //                / CLKOUT0_DIVIDE
 //
-//   Nexys A7 exact 24 MHz defaults:
+//   Nexys A7 defaults, giving exactly 20 MHz:
 //
 //     Fin = 100 MHz, DIVCLK_DIVIDE = 5,
 //     CLKFBOUT_MULT = 48, CLKOUT0_DIVIDE = 48
 //
 //     100 MHz / 5 * 48 / 48 = 20 MHz
+//
+//   The phase detector runs at 100 / 5 = 20 MHz and the VCO at 20 * 48 =
+//   960 MHz, both inside the legal range for a -1 speed grade Artix-7.
 //
 //   To change the output frequency, override the three integer divider/
 //   multiplier parameters from M0_fpga_top. Keep the PLL PFD and VCO inside
