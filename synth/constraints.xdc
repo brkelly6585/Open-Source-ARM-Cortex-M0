@@ -9,17 +9,18 @@
 ## ============================================================================
 
 ## ---- Primary clock: 100 MHz board oscillator -------------------------------
-## Leave this at 10.000 even if you divide the clock down with a Clocking Wizard.
-## This constrains the OSCILLATOR. The wizard's output clock is derived from it
-## and Vivado will infer and constrain it automatically -- do NOT hand-write a
-## create_clock for the wizard output, or you will end up with two conflicting
-## definitions on the same net.
+## This constrains the OSCILLATOR, not the core clock. Leave the period matching
+## your board's crystal even though clock_gen divides it down: Vivado derives the
+## PLL output clock from this one automatically. Do not hand-write a create_clock
+## for the PLL output, or you will end up with two conflicting definitions on the
+## same net.
 create_clock -period 10.000 -name sys_clk [get_ports clk]
 set_property -dict { PACKAGE_PIN E3 IOSTANDARD LVCMOS33 } [get_ports clk]
 
-## If you are NOT using a Clocking Wizard and instead feed the core straight from
-## the 100 MHz oscillator, change the period above to your target and iterate
-## (see the Fmax notes). The core will not close timing at 100 MHz.
+## The core clock is set by the PLL ratios in M0_fpga_top.v, which default to
+## 100 MHz / 5 * 48 / 48 = 20 MHz. To run at a different frequency, change those
+## parameters rather than this constraint. Feeding the core straight from the
+## 100 MHz oscillator will not close timing.
 
 ## ---- Reset: BTNC, active high ----------------------------------------------
 set_property -dict { PACKAGE_PIN N17 IOSTANDARD LVCMOS33 } [get_ports rst]
