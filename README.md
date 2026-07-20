@@ -8,13 +8,13 @@ tool and synthesizes on any FPGA.
 ## Result
 
 Running an instruction-for-instruction identical CoreMark binary, this core
-lands **6 cycles from real Cortex-M0 silicon per iteration**, a difference of
-2.6 parts per million:
+lands **3 cycles from real Cortex-M0 silicon per iteration**, a difference of
+1.29 parts per million:
 
 | Platform | Cycles per CoreMark iteration |
 |----------|-------------------------------|
 | STM32F051R8T6 silicon | 2,333,608 |
-| This core on a Nexys A7-100T | 2,333,614 |
+| This core on a Nexys A7-100T | 2,333,611 |
 
 CoreMark's own CRC self-checks pass on both, so both machines really did run the
 benchmark correctly. Every instruction class also matches the cycle counts in
@@ -24,8 +24,10 @@ multi-register transfers cost 1 + N, and so on.
 
 The core passes an ARMv6-M instruction coverage test covering every instruction
 that can be exercised on a bare core, run back to back with no padding between
-instructions. It reaches 20 MHz on a Nexys A7-100T, roughly five sixths of the
-24 MHz zero-wait-state ceiling of a real Cortex-M0 in an STM32F051.
+instructions. On a Nexys A7-100T it closes timing at 20 MHz with +2.173 ns worst
+setup slack, using 5,978 LUTs, 2,463 flip-flops, 18 block RAMs and three DSP
+slices. That 20 MHz is roughly five sixths of the 24 MHz zero-wait-state ceiling
+of a real Cortex-M0 in an STM32F051.
 
 ## Documentation
 
