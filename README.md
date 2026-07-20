@@ -5,6 +5,40 @@ cycle-accurate against real Cortex-M0 silicon. The RTL is plain Verilog-2005
 with no vendor primitives in the core itself, so it simulates in any standard
 tool and synthesizes on any FPGA.
 
+## Result
+
+Running an instruction-for-instruction identical CoreMark binary, this core
+lands **6 cycles from real Cortex-M0 silicon per iteration**, a difference of
+2.6 parts per million:
+
+| Platform | Cycles per CoreMark iteration |
+|----------|-------------------------------|
+| STM32F051R8T6 silicon | 2,333,608 |
+| This core on a Nexys A7-100T | 2,333,614 |
+
+CoreMark's own CRC self-checks pass on both, so both machines really did run the
+benchmark correctly. Every instruction class also matches the cycle counts in
+ARM's Cortex-M0 Technical Reference Manual individually, not just in aggregate:
+`BL` costs 4 cycles, `POP {reglist, PC}` costs 4 + N, taken branches cost 3,
+multi-register transfers cost 1 + N, and so on.
+
+The core passes an ARMv6-M instruction coverage test covering every instruction
+that can be exercised on a bare core, run back to back with no padding between
+instructions. It reaches 20 MHz on a Nexys A7-100T, roughly five sixths of the
+24 MHz zero-wait-state ceiling of a real Cortex-M0 in an STM32F051.
+
+## Documentation
+
+Two write-ups are included at the root of this repository:
+
+- [Thesis, SCU version](Open-Source_ARM_Cortex_M0_Thesis-SCU_Version.pdf)
+- [Thesis, IEEE format](Open_Source_ARM_Cortex_M0_Thesis_IEEE.pdf)
+
+They cover the microarchitecture, the timing work needed to match silicon, and
+the verification methodology in full.
+
+## Layout
+
 This repository holds two projects that share the same processor RTL:
 
 | Folder  | Purpose | Top module |
